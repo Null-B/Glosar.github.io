@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossar – Cybersecurity am Flughafen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --border: #1e2740;
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --tag-bg: #1e3a5f;
+    --tag-text: #93c5fd;
+    --highlight: #1d4ed8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 48px;
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  header .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .search-wrap {
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px 12px 40px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--highlight);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    border-bottom: 1px solid var(--accent);
+  }
+
+  thead th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: var(--surface); }
+
+  tbody tr.hidden { display: none; }
+
+  td {
+    padding: 16px;
+    vertical-align: top;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  td:first-child {
+    width: 220px;
+    min-width: 180px;
+  }
+
+  .term {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .definition {
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  .definition strong {
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 48px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="label">Interne Dokumentation · Cybersecurity</div>
+    <h1>Glossar</h1>
+    <p>Alle wichtigen Fachbegriffe aus dem Bereich Cybersecurity – einfach erklärt für den Einstieg ohne Vorkenntnisse.</p>
+  </header>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Begriff suchen…" oninput="filterTable()">
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('alle', this)">Alle</button>
+    <button class="filter-btn" onclick="setFilter('gesetz', this)">Gesetze & Behörden</button>
+    <button class="filter-btn" onclick="setFilter('technik', this)">Technik</button>
+    <button class="filter-btn" onclick="setFilter('prozess', this)">Prozesse</button>
+    <button class="filter-btn" onclick="setFilter('angriff', this)">Angriffe</button>
+    <button class="filter-btn" onclick="setFilter('framework', this)">Frameworks</button>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <table id="glossar">
+    <thead>
+      <tr>
+        <th>Fachbegriff</th>
+        <th>Bedeutung</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">ISG</span><span class="tag">Gesetz</span></td>
+        <td class="definition">Das <strong>Informationssicherheitsgesetz</strong> ist das Schweizer Bundesgesetz, das seit 2022 vollständig in Kraft ist. Es macht frühere Empfehlungen zur Cybersecurity für bestimmte Organisationen – darunter Betreiber kritischer Infrastrukturen wie Flughäfen – rechtlich verbindlich. Wer dagegen verstösst, riskiert Bussen bis zu 100'000 Franken.</td>
+      </tr>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">NCS / NCS</span><span class="tag">Gesetz</span></td>
+        <td class="definition">Die <strong>Nationale Cyberstrategie</strong> der Schweiz ist der strategische Rahmen, auf dem das ISG aufgebaut wurde. Im Unterschied zum ISG hat die NCS keine rechtlich bindende Kraft – sie formuliert Empfehlungen und Ziele, verpflichtet aber niemanden zu deren Umsetzung.</td>
+      </tr>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">BACS</span><span class="tag">Behörde</span></td>
+        <td class="definition">Das <strong>Bundesamt für Cybersicherheit</strong> ist die zuständige Schweizer Behörde für Cybersicherheit. Es überwacht die Umsetzung des ISG, nimmt Meldungen von Cybervorfällen entgegen, wertet diese aus und publiziert regelmässig Statistiken zu gemeldeten Angriffen.</td>
+      </tr>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">BWL</span><span class="tag">Behörde</span></td>
+        <td class="definition">Das <strong>Bundesamt für wirtschaftliche Landesversorgung</strong> hat die IKT-Minimalstandards entwickelt. Es ist zuständig für die Versorgungssicherheit der Schweiz – dazu gehört auch, dass die digitale Infrastruktur kritischer Betriebe widerstandsfähig bleibt.</td>
+      </tr>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">NIS2</span><span class="tag">Gesetz</span></td>
+        <td class="definition">Die <strong>Network and Information Security Directive 2</strong> ist eine EU-Richtlinie, die in Europa strengere Cybersecurity-Anforderungen vorschreibt als die Vorgängerversion. Als Flughafen mit europäischen Partnern und Verbindungen sind wir indirekt davon betroffen, auch wenn wir kein EU-Mitglied sind.</td>
+      </tr>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">Vernehmlassung</span><span class="tag">Gesetz</span></td>
+        <td class="definition">Ein typisch schweizerisches Verfahren, bei dem ein Gesetzesentwurf vor der Verabschiedung öffentlich zur Stellungnahme freigegeben wird. Betroffene Organisationen, Kantone und Verbände können Einwände einbringen. Beim ISG fand diese Phase 2012 statt.</td>
+      </tr>
+
+      <tr data-cat="gesetz">
+        <td><span class="term">Referendumsfrist</span><span class="tag">Gesetz</span></td>
+        <td class="definition">Die Frist, in der das Schweizer Volk gegen ein verabschiedetes Gesetz das Referendum ergreifen kann. Läuft sie ohne Referendum ab, tritt das Gesetz in Kraft. Beim ISG führte diese Frist dazu, dass erste Teile des Gesetzes erst 2020 wirksam wurden.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">OT</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Operational Technology</strong> – Technologie, die direkte physische oder betriebliche Aufgaben steuert. Am Flughafen sind das zum Beispiel Systeme für die Pistenpflege, die Stromversorgung der Terminals oder die Betankung von Flugzeugen. Ohne OT kann kein Flugzeug starten oder landen.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">IT</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Information Technology</strong> – Technologie, die Informationen verarbeitet und den Betrieb unterstützt, aber nicht direkt für den Flugbetrieb zwingend notwendig ist. Beispiele am Flughafen: Kassensysteme in Restaurants, interne E-Mail-Systeme oder Personalverwaltung.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">IKT</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Informations- und Kommunikationstechnologie</strong> – ein Oberbegriff, der sowohl IT als auch alle Kommunikationssysteme umfasst. In der Schweizer Gesetzgebung wird häufig IKT anstelle von IT verwendet, wenn beide Bereiche gemeint sind.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">ICT</span><span class="tag">Technik</span></td>
+        <td class="definition">Englische Entsprechung von IKT: <strong>Information and Communication Technology</strong>. Wird in internationalen Dokumenten und Frameworks verwendet, bedeutet dasselbe wie IKT.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">Infrastruktur</span><span class="tag">Technik</span></td>
+        <td class="definition">Die Gesamtheit aller technischen Systeme, Netzwerke, Server und Geräte, auf denen ein Betrieb läuft. Am Flughafen umfasst die Infrastruktur alles von der Firewall über die Zugangssysteme bis hin zu den Tracking-Servern für Flugzeuge.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">Kritische Infrastruktur</span><span class="tag">Technik</span></td>
+        <td class="definition">Einrichtungen, deren Ausfall schwerwiegende Folgen für den Staat, die Wirtschaft oder die Bevölkerung hätte. Flughäfen gelten als kritische Infrastruktur – sie sind deshalb strengeren Cybersecurity-Anforderungen unterworfen als ein durchschnittliches Unternehmen.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">Netzwerk / Netz</span><span class="tag">Technik</span></td>
+        <td class="definition">Ein System von miteinander verbundenen Computern und Geräten, die Daten austauschen können. Ein sicheres Netzwerk verhindert, dass Unbefugte auf diese Daten zugreifen oder die Systeme stören können.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">Server</span><span class="tag">Technik</span></td>
+        <td class="definition">Ein leistungsstarker Computer, der Daten speichert und anderen Geräten im Netzwerk zur Verfügung stellt. Fällt ein Server aus, sind oft viele andere Systeme gleichzeitig betroffen.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">Redundanz</span><span class="tag">Technik</span></td>
+        <td class="definition">Das bewusste Vorhalten von doppelten Systemen oder Datensicherungen. Wenn ein System ausfällt, springt das redundante System automatisch ein. Fehlende Redundanz bedeutet: ein einziger Ausfall kann den gesamten Betrieb lahmlegen.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">Firewall</span><span class="tag">Technik</span></td>
+        <td class="definition">Eine Schutzbarriere zwischen einem internen Netzwerk und dem Internet. Sie überwacht den Datenverkehr und blockiert verdächtige oder nicht autorisierte Verbindungen – vergleichbar mit einem Türsteher, der entscheidet, wer rein darf und wer nicht.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">IAM</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Identity and Access Management</strong> – das System, das verwaltet, welche Person Zugriff auf welche Systeme hat. Am Flughafen wird dadurch sichergestellt, dass zum Beispiel ein Restaurantmitarbeiter keinen Zugang zu den Flugsicherungssystemen erhält.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">MDR</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Managed Detection and Response</strong> – ein externer oder interner Dienst, der rund um die Uhr Bedrohungen in einem Netzwerk erkennt und darauf reagiert. Unser Flughafen hat ein solches System eingeführt, das über die gesetzlichen Mindestanforderungen hinausgeht.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">SOC</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Security Operations Center</strong> – ein Team und eine Einheit, die kontinuierlich die Sicherheit der IT-Systeme eines Unternehmens überwacht. Das SOC analysiert Alarme, erkennt Angriffe und koordiniert die Reaktion darauf.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">ISMS</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Information Security Management System</strong> – ein strukturiertes System aus Richtlinien, Prozessen und Massnahmen, das die Informationssicherheit einer Organisation gesamtheitlich regelt. Das ISG schreibt die Einführung eines ISMS für betroffene Betriebe vor.</td>
+      </tr>
+
+      <tr data-cat="technik">
+        <td><span class="term">AOP</span><span class="tag">Technik</span></td>
+        <td class="definition"><strong>Airport Operations Plan</strong> – ein operatives Planungssystem für Flughäfen, das Flugbewegungen, Ressourcen und Abläufe koordiniert. Der Zugriff auf AOP-Server ist sicherheitskritisch und Teil der OT-Infrastruktur.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Incident</span><span class="tag">Prozess</span></td>
+        <td class="definition">Jedes unerwünschte Ereignis, das die Sicherheit oder den Betrieb der IT-Systeme beeinträchtigt oder beeinträchtigen könnte. Das kann ein Cyberangriff sein, aber auch ein technischer Fehler oder ein versehentlicher Datenverlust.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Incident Management</span><span class="tag">Prozess</span></td>
+        <td class="definition">Der strukturierte Prozess, mit dem ein Betrieb auf Sicherheitsvorfälle reagiert. Er legt fest, wer was in welcher Reihenfolge tut – von der Erkennung des Vorfalls über die Bekämpfung bis zur Wiederherstellung des Normalbetriebs.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Incident Task Force</span><span class="tag">Prozess</span></td>
+        <td class="definition">Ein speziell zusammengestelltes Team, das im Ernstfall aktiviert wird, um einen Sicherheitsvorfall zu lösen. Jedes Mitglied übernimmt einen definierten Aufgabenbereich – gemeinsam erarbeiten sie die Lösung.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Meldepflicht</span><span class="tag">Prozess</span></td>
+        <td class="definition">Die gesetzliche Verpflichtung, einen Cyberangriff innerhalb einer bestimmten Frist den zuständigen Behörden zu melden. Laut ISG müssen Betreiber kritischer Infrastrukturen einen Vorfall innerhalb von <strong>24 Stunden</strong> beim BACS melden.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Recovery</span><span class="tag">Prozess</span></td>
+        <td class="definition">Die Wiederherstellungsphase nach einem Cyberangriff. Systeme werden wieder online gebracht, Daten wiederhergestellt und der normale Betrieb schrittweise aufgenommen – idealerweise anhand eines vorbereiteten Recovery-Plans.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Recovery Plan</span><span class="tag">Prozess</span></td>
+        <td class="definition">Ein vorab erstellter Plan, der genau beschreibt, wie nach einem Angriff oder Ausfall vorgegangen wird. Er verhindert, dass im Stress wichtige Schritte vergessen werden oder Systeme unkontrolliert wieder ans Netz gehen.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Kommunikationsmatrix</span><span class="tag">Prozess</span></td>
+        <td class="definition">Eine vordefinierte Übersicht darüber, wer im Krisenfall wen informiert, in welcher Reihenfolge und über welchen Kanal. Sie verhindert Chaos und stellt sicher, dass alle relevanten Stellen rechtzeitig informiert werden – ohne Reputationsschäden durch unkontrollierte Kommunikation.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Self-Assessment</span><span class="tag">Prozess</span></td>
+        <td class="definition">Eine strukturierte Selbstbewertung, mit der ein Betrieb sein eigenes Cybersecurity-Niveau beurteilt. Der Bund stellt ein solches Tool zur Verfügung, das auf den IKT-Minimalstandards basiert. Das Ergebnis liefert eine Punktzahl und zeigt auf, wo Handlungsbedarf besteht.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">KPI</span><span class="tag">Prozess</span></td>
+        <td class="definition"><strong>Key Performance Indicator</strong> – eine Kennzahl, die misst, wie gut eine bestimmte Leistung erbracht wird. Im Cybersecurity-Kontext ist unser Ziel-Score von 3.6 im IKT-Self-Assessment ein solcher KPI – er zeigt, ob wir das geforderte Sicherheitsniveau einhalten.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Audit</span><span class="tag">Prozess</span></td>
+        <td class="definition">Eine formelle Überprüfung, bei der eine externe oder interne Stelle bewertet, ob ein Betrieb die vorgegebenen Anforderungen erfüllt. Früher hatten Audits bei uns nur eine beratende Rolle – heute haben sie durch das ISG mehr Durchsetzungskraft.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Risikomanagement</span><span class="tag">Prozess</span></td>
+        <td class="definition">Der systematische Prozess, bei dem Risiken identifiziert, bewertet und priorisiert werden – und danach entschieden wird, welche Massnahmen dagegen ergriffen werden. Im ISG ist Risikomanagement eine der zentralen Pflichtanforderungen.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Klassifikation</span><span class="tag">Prozess</span></td>
+        <td class="definition">Das Einteilen von Informationen oder Systemen nach ihrer Schutzbedürftigkeit. Nicht jede Information ist gleich wertvoll – durch Klassifikation weiss man, welche Daten besonders geschützt werden müssen und welche weniger kritisch sind.</td>
+      </tr>
+
+      <tr data-cat="prozess">
+        <td><span class="term">Monitoring</span><span class="tag">Prozess</span></td>
+        <td class="definition">Die laufende, oft automatisierte Überwachung von Systemen und Netzwerken. Monitoring-Tools erkennen ungewöhnliche Aktivitäten und schlagen Alarm, bevor ein Problem eskaliert. Am Flughafen haben wir unsere ersten Monitoring-Systeme 2020 eingeführt.</td>
+      </tr>
+
+      <tr data-cat="angriff">
+        <td><span class="term">Cyberangriff</span><span class="tag">Angriff</span></td>
+        <td class="definition">Ein gezielter Angriff auf digitale Systeme, Netzwerke oder Daten. Ziel kann sein: Daten stehlen, Systeme lahmlegen, Lösegeld erpressen oder Informationen manipulieren. Kritische Infrastrukturen wie Flughäfen sind besonders attraktive Ziele.</td>
+      </tr>
+
+      <tr data-cat="angriff">
+        <td><span class="term">Phishing</span><span class="tag">Angriff</span></td>
+        <td class="definition">Eine der häufigsten Angriffsmethoden: Angreifer versenden täuschend echte E-Mails oder Nachrichten, um Mitarbeitende dazu zu bringen, ihre Zugangsdaten preiszugeben oder schädliche Links anzuklicken. Der Mensch – nicht die Technik – ist hier das Ziel.</td>
+      </tr>
+
+      <tr data-cat="angriff">
+        <td><span class="term">Angriffsfläche</span><span class="tag">Angriff</span></td>
+        <td class="definition">Die Gesamtheit aller Punkte, über die ein Angreifer in ein System eindringen könnte. Je mehr vernetzte Systeme ein Betrieb hat, desto grösser ist seine Angriffsfläche. Die Identifikation der Angriffsfläche ist Teil des IDENTIFY-Schritts im NIST-Framework.</td>
+      </tr>
+
+      <tr data-cat="angriff">
+        <td><span class="term">Schwachstelle / Lücke</span><span class="tag">Angriff</span></td>
+        <td class="definition">Eine Sicherheitslücke in einem System oder Prozess, die von Angreifern ausgenutzt werden kann. Schwachstellen entstehen durch veraltete Software, falsche Konfigurationen oder fehlende Sicherheitsmassnahmen.</td>
+      </tr>
+
+      <tr data-cat="angriff">
+        <td><span class="term">Angreifer / Threat Actor</span><span class="tag">Angriff</span></td>
+        <td class="definition">Eine Person, Gruppe oder Organisation, die einen Cyberangriff durchführt. Das können staatliche Akteure, kriminelle Gruppen oder Einzelpersonen sein – mit unterschiedlichen Motiven wie Spionage, finanziellem Gewinn oder Sabotage.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">NIST</span><span class="tag">Framework</span></td>
+        <td class="definition">Das <strong>National Institute of Standards and Technology</strong> ist eine US-amerikanische Behörde, die international anerkannte Standards und Frameworks entwickelt. Das NIST Cybersecurity Framework dient weltweit – auch in der Schweiz – als Grundlage für Cybersecurity-Regelwerke.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">NIST CSF 2.0</span><span class="tag">Framework</span></td>
+        <td class="definition">Die aktuelle Version des <strong>NIST Cybersecurity Framework</strong>. Es strukturiert Cybersecurity in fünf Kernfunktionen: Govern, Identify, Protect, Detect, Respond und Recover. Die Schweizer IKT-Minimalstandards basieren direkt darauf.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">IKT-Minimalstandard</span><span class="tag">Framework</span></td>
+        <td class="definition">Die vom BWL entwickelten Mindestanforderungen an die Cybersecurity kritischer Infrastrukturen in der Schweiz. Für die meisten Betriebe sind sie eine Empfehlung – für uns als Flughafen sind sie durch das ISG verbindlich. Die Erfüllung wird anhand eines Self-Assessments gemessen.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">GOVERN</span><span class="tag">Framework</span></td>
+        <td class="definition">Die erste Funktion im NIST CSF 2.0. Sie definiert den organisationsweiten Rahmen für Cybersecurity: Welche Ziele verfolgen wir? Welche Risiken sind akzeptabel? Daraus entsteht eine Cybersecurity-Strategie, die für die gesamte Organisation gilt.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">IDENTIFY</span><span class="tag">Framework</span></td>
+        <td class="definition">Die zweite Funktion im NIST CSF 2.0. Sie verlangt, dass ein Betrieb seine eigenen Systeme, Daten und Risiken vollständig kennt und dokumentiert. Nur wer weiss, was er hat, kann es auch schützen.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">PROTECT</span><span class="tag">Framework</span></td>
+        <td class="definition">Die dritte Funktion im NIST CSF 2.0. Sie umfasst alle Massnahmen, die einen Angriff verhindern sollen: Zugriffskontrollen, Schulungen für Mitarbeitende, Systempflege und Software-Updates.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">DETECT</span><span class="tag">Framework</span></td>
+        <td class="definition">Die vierte Funktion im NIST CSF 2.0. Sie stellt sicher, dass Angriffe und Anomalien so früh wie möglich erkannt werden. Ohne Detect-Massnahmen bleibt ein Angriff oft wochenlang unbemerkt.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">RESPOND</span><span class="tag">Framework</span></td>
+        <td class="definition">Die fünfte Funktion im NIST CSF 2.0. Sie beschreibt, wie ein Betrieb auf einen erkannten Angriff reagiert – mit klaren Verantwortlichkeiten, Kommunikationsplänen und definierten Abläufen, um den Schaden zu begrenzen.</td>
+      </tr>
+
+      <tr data-cat="framework">
+        <td><span class="term">RECOVER</span><span class="tag">Framework</span></td>
+        <td class="definition">Die sechste Funktion im NIST CSF 2.0. Sie beschreibt den Wiederaufbau nach einem Angriff: Systeme wiederherstellen, Daten sichern, Betrieb normalisieren und aus dem Vorfall lernen.</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div class="no-results" id="no-results">Keine Begriffe gefunden.</div>
+
+</div>
+
+<script>
+  let activeFilter = 'alle';
+
+  function updateCount() {
+    const visible = document.querySelectorAll('#glossar tbody tr:not(.hidden)').length;
+    document.getElementById('count').textContent = visible + ' Begriff' + (visible !== 1 ? 'e' : '');
+  }
+
+  function filterTable() {
+    const q = document.getElementById('search').value.toLowerCase();
+    const rows = document.querySelectorAll('#glossar tbody tr');
+    let visCount = 0;
+
+    rows.forEach(row => {
+      const matchCat = activeFilter === 'alle' || row.dataset.cat === activeFilter;
+      const matchQ = q === '' || row.textContent.toLowerCase().includes(q);
+      if (matchCat && matchQ) {
+        row.classList.remove('hidden');
+        visCount++;
+      } else {
+        row.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('no-results').style.display = visCount === 0 ? 'block' : 'none';
+    updateCount();
+  }
+
+  function setFilter(cat, btn) {
+    activeFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterTable();
+  }
+
+  updateCount();
+</script>
+</body>
+</html>
